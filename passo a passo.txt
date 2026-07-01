@@ -1,0 +1,31 @@
+npm init -y
+npm install express bcrypt
+npm install jsonwebtoken cookie-parser
+npm install @prisma/client@6 prisma@6 --save-dev
+npx prisma init --datasource-provider sqlite
+
+modificar arquivo schema.prisma
+
+npx prisma migrate dev --name init
+
+criar arquivo seed.js na raiz
+executar node seed.js
+
+criar server.js na raiz
+pasta public para as telas
+public/index.html
+public/user.html
+public/admin.html
+
+executar node server.js
+acessar o localhost
+
+
+Teste o login de Administrador:
+E-mail: admin@escola.com
+Senha: 123456
+
+Teste o login de Usuário:
+E-mail: usuario@escola.com
+Senha: 123456
+
