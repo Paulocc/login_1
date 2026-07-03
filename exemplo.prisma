@@ -1,0 +1,95 @@
+//CONFIGURAÇÃO DO PROVEDOR DE DADOS
+datasource db {
+  provider = "sqlite"
+  //No SQLite, a URL aponta para um arquivo local (ex: "file:./dev.db")
+  url      = env("DATABASE_URL")
+}
+
+//CONFIGURAÇÃO DO GERADOR DO CLIENTE
+generator client {
+  provider = "prisma-client-js"
+}
+
+//MODELOS DE DADOS E MAPEAMENTO DE TIPOS DO SQLITE
+
+model User {
+  //Int @id @default(autoincrement()): Mapeia para INTEGER PRIMARY KEY AUTOINCREMENT no SQLite
+  id        Int      @id @default(autoincrement())
+  
+  //String: Mapeia para TEXT no SQLite. O @unique indica que o valor é único
+  email     String   @unique
+  
+  //String?: O ponto de interrogação indica que o campo aceita NULL
+  name      String?
+  
+  //DateTime: Mapeia para NUMERIC ou TEXT no SQLite
+  //@default(now()): Insere automaticamente a data/hora atual na criação
+  createdAt DateTime @default(now())
+
+  //Como o SQLite não suporta ENUMS nativos, a convenção padrão é salvar como String
+  //e fazer a validação na lógica da aplicação (ou usar uma tabela de lookup)
+  role      String   @default("USER") // Valores esperados: "USER", "ADMIN"
+
+  //Relacionamentos virtuais (Não criam colunas físicas nesta tabela)
+  profile   Profile? //Relacionamento 1:1 opcional
+  posts     Post[]   //Relacionamento 1:N (Um usuário pode ter vários posts)
+
+  @@map("users") //renomeia a tabela para o plural no banco de dados
+}
+
+model Profile {
+  id     Int    @id @default(autoincrement())
+  bio    String
+  
+  //Chave estrangeira para o Usuário
+  userId Int    @unique //O @unique garante a relação 1:1 (um perfil por usuário)
+  
+  //Define a relação. Quando o usuário for deletado, o perfil também será (Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Post {
+  //String @id @default(uuid()): No SQLite, salva o UUID como TEXT (chave primária string)
+  id        String   @id @default(uuid())
+  title     String
+  
+  //No SQLite, o tipo "Json" NÃO é suportado nativamente pelo Prisma.
+  //Se precisar salvar dados dinâmicos, salve como String normal e faça o JSON.stringify() / JSON.parse() no código.
+  content   String?  
+  
+  //Boolean: Mapeia para INTEGER no SQLite (0 para false, 1 para true)
+  published Boolean  @default(false)
+  
+  //Chave estrangeira para a relação 1:N
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  //Relação N:M (Muitos para Muitos) explícita com a tabela intermediária
+  tags      PostTag[] 
+
+  @@map("posts")
+}
+
+model Tag {
+  id    Int       @id @default(autoincrement())
+  name  String    @unique
+  posts PostTag[] // Relação N:M explícita
+
+  @@map("tags")
+}
+
+//RELAÇÃO MUITOS PARA MUITOS (N:M) NO SQLITE
+//O Prisma suporta relações N:M implícitas no SQLite, mas criar a tabela 
+//intermediária explicitamente (como abaixo) dá mais controle sobre o banco de dados.
+model PostTag {
+  postId String
+  tagId  Int
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  //@@id([...]): Cria uma chave primária composta (evita tags duplicadas no mesmo post)
+  @@id([postId, tagId])
+  @@map("post_tags")
+}
