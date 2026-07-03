@@ -37,9 +37,9 @@
             if (response.ok && data.success) {
                 // Redireciona com base no papel (role)
                 if (data.role === 'ADMIN') {
-                    window.location.href = '/admin.html';
+                    window.location.href = '/admin';
                 } else {
-                    window.location.href = '/user.html';
+                    window.location.href = '/user';
                 }
             } else {
                 erroEl.textContent = data.error;
