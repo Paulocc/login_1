@@ -1,31 +1,58 @@
+Primeiramente, garanta que o node.js esteja instalado
+para verificar, abra o powershell e digite: 
+node -v
+Caso apareça a versão, significa que está instalado.
+Digite:
+npm -v
+Caso apareça a versão, o gerenciador de pacotes do node também está funcionando. Caso
+apareça algum erro, abra o PowerShell como administrador, e execute o seguinte comando:
+Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+Pressione a tecla A e de enter
+Com isso, novamente teste o npm -v, desta vez a versão irá aparecer sem problemas.
+
+Com isso pronto, no vscode, crie uma nova pasta para iniciar o projeto
+Abra o terminal no vscode (ctrl + shift + ')
+Digite os seguintes comandos
+
 npm init -y
-npm install express bcrypt
-npm install jsonwebtoken cookie-parser
+npm install express bcrypt jsonwebtoken cookie-parser
 npm install @prisma/client@6 prisma@6 --save-dev
 npx prisma init --datasource-provider sqlite
 
-modificar arquivo schema.prisma
+Com isso os pacotes necessários para executar o projeto serão instalados.
+Alguns arquivos serão criados com isso, um deles é a pasta prisma
+Abra essa pasta e modifique o arquivo schema.prisma com o arquivo de mesmo nome neste repositório.
 
+Execute:
 npx prisma migrate dev --name init
 
-criar arquivo seed.js na raiz
-executar node seed.js
+crie o arquivo seed.js e server.js na raiz do projeto
+Novamente, modifique esses arquivos criados copiando os arquivos de mesmo nome neste repositório.
+execute: 
 
-criar server.js na raiz
-pasta public para as telas
-public/index.html
-public/user.html
-public/admin.html
+node seed.js
 
-executar node server.js
-acessar o localhost
+Se rodar sem problemas, uma mensagem irá aparecer indicando sucesso.
+Após isso, crie duas pastas, uma public e uma private
+crie o arquivo index.html na pasta public
+crie os arquivos user.html e admin.html na pasta private
 
+Modifique esses arquivos copiando os arquivos de mesmo nome neste repositório.
 
-Teste o login de Administrador:
+execute:
+
+node server.js
+
+Se tudo estiver certo, pelo navegador acesse: localhost:3000
+
+Assim irá aparecer a tela de login, teste os logins de administrador e de usuário
+utilizando o email e senha abaixo:
+
+Teste o login de com Administrador:
 E-mail: admin@escola.com
 Senha: 123456
 
-Teste o login de Usuário:
+Teste o login de com Usuário:
 E-mail: usuario@escola.com
 Senha: 123456
 
